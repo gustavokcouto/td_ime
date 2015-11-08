@@ -1,0 +1,24 @@
+#IncludeRegexLine: ^[ 	]*#[ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/gustavo/git/td_bizurado/config.h
+
+/home/gustavo/git/td_bizurado/zipcrack.c
+stdio.h
+-
+stdlib.h
+-
+stdbool.h
+-
+unistd.h
+-
+string.h
+-
+config.h
+/home/gustavo/git/td_bizurado/config.h
+

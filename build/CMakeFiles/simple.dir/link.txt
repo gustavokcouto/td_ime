@@ -1,0 +1,1 @@
+/usr/bin/cc      CMakeFiles/simple.dir/zipcrack.c.o  -o ../simple -rdynamic 
