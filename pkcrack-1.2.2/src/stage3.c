@@ -61,7 +61,10 @@ static char RCSID[]="$Id: stage3.c,v 1.10 2002/12/30 18:27:25 lucifer Exp $";
 #define	BYTES_BEFORE_INIT	4
 
 static byte	pwd[15];
+static byte	pwd1[15]="";
 static int	pwdLen;
+
+int count = 0;
 
 static uword	l0, l1, l2, m0, m1, m2;
 static uword	key1list[7], key0list[7];
@@ -139,13 +142,25 @@ int	i;
 
     if( testPwd() )
     {
-	printf( "Key:" );
-	for( i = 0; i < pwdLen; i++ )
-	    printf( " %02x", pwd[i] );
-	printf( "\nOr as a string: '" );
-	for( i = 0; i < pwdLen; i++ )
-	    printf( "%c", pwd[i] );
-	printf( "' (without the enclosing single quotes)\n" );
+	int cond=0;
+	//for( i = 0; i < pwdLen; i++ )
+	    //printf( " %02x", pwd[i] );
+	//printf( "\nOr as a string: '" );
+        for( i = 0; i < pwdLen; i++ ){
+	  if(pwd[i]!=pwd1[i])
+            cond = 1;
+        }
+        if((cond)&&(count>0)){
+            printf( "Key:" );
+            for( i = 0; i < pwdLen; i++ ){
+                pwd1[i]=pwd[i];
+	        printf( "%c", pwd[i] );
+            }
+          printf("\n");
+          count++;
+          printf("%d", count);
+        }
+	//printf( "' (without the enclosing single quotes)\n" );
 	fflush( stdout );
 	return 0;
     }
@@ -378,6 +393,9 @@ uword	key0list[20], key1list[20], key2list[20];
 	{
 	    pwd[pwdLen++] = 1;
 	    i = 0;
+            if((pwdLen+6)==10){
+                break;
+            }
 	}
 	if( pwdLen-i >= BYTES_BEFORE_INIT )
 	{
@@ -431,6 +449,7 @@ void findPwd( uword key0, uword key1, uword key2 )
     l0 = key0;
     l1 = key1;
     l2 = key2;
+    count = 0;
 
     if( !findShortPwd( key0, key1, key2 ) )
     {

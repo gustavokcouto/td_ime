@@ -44,41 +44,45 @@
 #include "stage3.h"
 #include "crc.h"
 #include "mktmptbl.h"
+#include <string.h>
+#include "pkcrack.h"
+#include "keystuff.h"
 
-static char RCSID[]="$Id: findkey.c,v 1.6 2002/11/02 15:12:06 lucifer Exp $";
-
-static void usage( char *name )
+void main(int argc, char **argv)
 {
-    fprintf( stderr, "Usage: %s <key0> <key1> <key2> [<pwdlen> <initvalue>]\n", name );
-    fprintf( stderr, "<key0>, <key1> and <key2> must be in hexadecimal.\n" );
-    fprintf( stderr, "<pwd> and <initvalue> can be given to continue an interrupted search.\n" );
-    fprintf( stderr, "<initvalue> must also be in hexadecimal.\n" );
-    exit( 1 );
-}
-
-void main( int argc, char **argv )
-{
-uword	key0, key1, key2;
-int	pwdLen=0;
-uword	initBytes;
-
-    if( argc != 4 && argc != 6 )
-	usage( argv[0] );
-
-    if( sscanf( argv[1], "%x", &key0 ) != 1 ||
-	sscanf( argv[2], "%x", &key1 ) != 1 ||
-	sscanf( argv[3], "%x", &key2 ) != 1 )
-	usage( argv[0] );
-
-    if( argc == 6 && (sscanf( argv[4], "%d", &pwdLen ) != 1 ||
-		      sscanf( argv[5], "%x", &initBytes ) != 1) )
-	usage( argv[0] );
-
-    mkCrcTab( );
-    initMulTab( );
-
-    if( pwdLen > 0 )
-	findLongPwd( key0, key1, key2, pwdLen, initBytes );
-    else
-	findPwd( key0, key1, key2 );
+  char    pwd[100] = "gustavo";
+  int     pwdLen, i;
+  FILE *ptr;
+  int c;
+  int count2 = 0;
+  ptr = fopen("10k_most_common.txt","r");
+  pwdLen = strlen( pwd );
+  mkCrcTab( );
+  initkeys( );
+  initMulTab();
+  while(!feof(ptr)){
+    key0=KEY0INIT;
+    key1=KEY1INIT;
+    key2=KEY2INIT;
+    //printf( "%08x %08x %08x\n", key0, key1, key2 );
+    i = 0;
+    c = fgetc(ptr);
+    do{
+      pwd[i] = (char)c;
+      i++;
+      c = fgetc(ptr);
+    }while(c!='\n');
+    pwd[i] = '\0';
+    pwdLen = i-1;
+    if(count2%100==0){
+      printf("%s\n", pwd);
+      printf("%d\n", count2);
+    }
+    for( i = 0; i < pwdLen; i++ )
+      updateKeys( pwd[i] );
+    //printf( "%08x %08x %08x\n", key0, key1, key2 );
+    findPwd( key0, key1, key2 );
+    count2++;
+  }
+  fclose(ptr);
 }
